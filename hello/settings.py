@@ -1,3 +1,5 @@
+import os
+
 """
 Django settings for hello project.
 
@@ -77,9 +79,9 @@ WSGI_APPLICATION = 'hello.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Polls',
-        'USER': 'app',
-        'PASSWORD': 'passw0rd',
+        'NAME': os.environ['DATABASENAME'],
+        'USER': os.environ['USER'],
+        'PASSWORD': os.environ['PASSWORD'],
         'HOST': '127.0.0.1',
         'PORT': '3306'
     }
