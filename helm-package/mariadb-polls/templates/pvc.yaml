@@ -1,0 +1,16 @@
+{{ if .Values.database.persistentVolume.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-data-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.database.persistentVolume.storageSize }}
+  storageClassName: {{ .Values.database.persistentVolume.className }}
+  {{ if .Values.database.persistentVolume.volumeMode }}
+  volumeMode: {{ .Values.database.persistentVolume.volumeMode }}
+  {{ end }}
+{{ end }}

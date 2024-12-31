@@ -1,0 +1,102 @@
+apiVersion: v1
+items:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: mariadb
+      app.kubernetes.io/component: mariadb
+      app.kubernetes.io/instance: mariadb
+    name: mariadb
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: docker.io/mariadb:lts-ubi9
+      from:
+        kind: DockerImage
+        name: docker.io/mariadb:lts-ubi9
+      generation: null
+      importPolicy:
+        importMode: Legacy
+      name: lts-ubi9
+      referencePolicy:
+        type: ""
+  status:
+    dockerImageRepository: ""
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"mariadb:lts-ubi9"},"fieldPath":"spec.template.spec.containers[?(@.name==\"mariadb\")].image"}]'
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: mariadb
+      app.kubernetes.io/component: mariadb
+      app.kubernetes.io/instance: mariadb
+    name: mariadb
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        deployment: mariadb
+    strategy: {}
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          deployment: mariadb
+      spec:
+        containers:
+        - env:
+          - name: MARIADB_DATABASE
+            value: Polls
+          - name: MARIADB_PASSWORD
+            value: passw0rd
+          - name: MARIADB_ROOT_PASSWORD
+            value: passw0rd
+          - name: MARIADB_USER
+            value: app
+          image: ' '
+          name: mariadb
+          ports:
+          - containerPort: 3306
+            protocol: TCP
+          resources: {}
+          volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: mariadb-volume-1
+        volumes:
+        - emptyDir: {}
+          name: mariadb-volume-1
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: mariadb
+      app.kubernetes.io/component: mariadb
+      app.kubernetes.io/instance: mariadb
+    name: mariadb
+  spec:
+    ports:
+    - name: 3306-tcp
+      port: 3306
+      protocol: TCP
+      targetPort: 3306
+    selector:
+      deployment: mariadb
+  status:
+    loadBalancer: {}
+kind: List
+metadata: {}

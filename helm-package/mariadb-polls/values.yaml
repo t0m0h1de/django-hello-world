@@ -1,0 +1,26 @@
+# Default values for django-mvc.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: docker.io/mariadb
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: lts-ubi9
+
+database:
+  enabled: true
+  rootPassword: passw0rd
+  databaseName: Polls
+  password: passw0rd
+  user: app
+  persistentVolume:
+    enabled: true
+    className: gp3
+    storageSize: 1Gi
+    volumeMode: Filesystem

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ .Release.Name }}:{{ .Values.image.tag }}"},"fieldPath":"spec.template.spec.containers[?(@.name==\"{{ .Release.Name }}\")].image"}]'
+  labels:
+    app: {{ .Release.Name }}
+  name: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      deployment: {{ .Release.Name }}
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        deployment: {{ .Release.Name }}
+    spec:
+      containers:
+      - image: ' '
+        {{ if .Values.database.enabled }}
+        env:
+        - name: MARIADB_DATABASE
+          value: {{ .Values.database.databaseName }}
+        - name: MARIADB_PASSWORD
+          value: {{ .Values.database.password }}
+        - name: MARIADB_ROOT_PASSWORD
+          value: {{ .Values.database.rootPassword }}
+        - name: MARIADB_USER
+          value: {{ .Values.database.user }}
+        {{ end }}
+        name: {{ .Release.Name }}
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mariadb-volume
+      volumes:
+      - name: mariadb-volume
+        {{ if .Values.database.persistentVolume.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-data-pvc
+        {{ else }}
+        emptyDir: {}
+        {{ end }}
